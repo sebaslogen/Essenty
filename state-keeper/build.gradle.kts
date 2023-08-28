@@ -8,6 +8,7 @@ plugins {
     id("kotlin-multiplatform")
     id("com.android.library")
     id("kotlin-parcelize")
+    id("kotlinx-serialization")
     id("com.arkivanov.parcelize.darwin")
     id("com.arkivanov.gradle.setup")
 }
@@ -25,13 +26,18 @@ kotlin {
         val android by bundle()
 
         common.main.dependencies {
-            api(project(":parcelable"))
             implementation(project(":utils-internal"))
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.0")
         }
 
         android.main.dependencies {
             implementation(deps.androidx.savedstate.savedstateKtx)
             implementation(deps.androidx.lifecycle.lifecycleRuntime)
+        }
+
+        android.test.dependencies {
+            implementation(deps.robolectric.robolectric)
         }
     }
 }

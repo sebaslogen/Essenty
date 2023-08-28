@@ -28,7 +28,6 @@ pluginManagement {
 if (!startParameter.projectProperties.containsKey("check_publication")) {
     include(":utils-internal")
     include(":lifecycle")
-    include(":parcelable")
     include(":state-keeper")
     include(":instance-keeper")
     include(":back-handler")

@@ -24,6 +24,7 @@ buildscript {
         classpath(deps.kotlinx.binaryCompatibilityValidator)
         classpath(deps.detekt.gradleDetektPlug)
         classpath(deps.parcelizeDarwin.gradlePlug)
+        classpath(kotlin(module = "serialization", version = deps.versions.kotlin.get()))
     }
 }
 

@@ -1,48 +1,45 @@
 package com.arkivanov.essenty.statekeeper
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.ParcelableContainer
-import com.arkivanov.essenty.parcelable.Parcelize
-import com.arkivanov.essenty.parcelable.consume
 import com.arkivanov.essenty.utils.internal.ensureNeverFrozen
-import kotlin.reflect.KClass
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationStrategy
 
-internal class DefaultStateKeeperDispatcher internal constructor(
-    savedState: ParcelableContainer?,
-    private val parcelableContainerFactory: (Parcelable) -> ParcelableContainer
+internal class DefaultStateKeeperDispatcher(
+    savedState: SerializableContainer?,
 ) : StateKeeperDispatcher {
-
-    constructor(savedState: ParcelableContainer?) : this(
-        savedState = savedState,
-        parcelableContainerFactory = { ParcelableContainer(it) } // Lambda because of https://youtrack.jetbrains.com/issue/KT-49186
-    )
 
     init {
         ensureNeverFrozen()
     }
 
-    private val savedState: MutableMap<String, ParcelableContainer>? = savedState?.consume<SavedState>()?.map
-    private val suppliers = HashMap<String, () -> Parcelable?>()
+    private val savedState: MutableMap<String, SerializableContainer>? = savedState?.consume(strategy = SavedState.serializer())?.map
+    private val suppliers = HashMap<String, Supplier<*>>()
 
-    override fun save(): ParcelableContainer {
-        val map = HashMap<String, ParcelableContainer>()
+    override fun save(): SerializableContainer {
+        val map = HashMap<String, SerializableContainer>()
         suppliers.forEach { (key, supplier) ->
-            supplier()?.also {
-                map[key] = parcelableContainerFactory(it)
+            supplier.toSerializableContainer()?.also { container ->
+                map[key] = container
             }
         }
 
-        return ParcelableContainer(SavedState(map))
+        return SerializableContainer(value = SavedState(map), strategy = SavedState.serializer())
     }
 
-    override fun <T : Parcelable> consume(key: String, clazz: KClass<out T>): T? =
+    private fun <T : Any> Supplier<T>.toSerializableContainer(): SerializableContainer? =
+        supplier()?.let { value ->
+            SerializableContainer(value = value, strategy = strategy)
+        }
+
+    override fun <T : Any> consume(key: String, strategy: DeserializationStrategy<T>): T? =
         savedState
             ?.remove(key)
-            ?.consume(clazz)
+            ?.consume(strategy = strategy)
 
-    override fun <T : Parcelable> register(key: String, supplier: () -> T?) {
+    override fun <T : Any> register(key: String, strategy: SerializationStrategy<T>, supplier: () -> T?) {
         check(!isRegistered(key)) { "Another supplier is already registered with the key: $key" }
-        suppliers[key] = supplier
+        suppliers[key] = Supplier(strategy = strategy, supplier = supplier)
     }
 
     override fun unregister(key: String) {
@@ -52,8 +49,13 @@ internal class DefaultStateKeeperDispatcher internal constructor(
 
     override fun isRegistered(key: String): Boolean = key in suppliers
 
-    @Parcelize
+    private class Supplier<T : Any>(
+        val strategy: SerializationStrategy<T>,
+        val supplier: () -> T?,
+    )
+
+    @Serializable
     private class SavedState(
-        val map: MutableMap<String, ParcelableContainer>
-    ) : Parcelable
+        val map: MutableMap<String, SerializableContainer>
+    )
 }

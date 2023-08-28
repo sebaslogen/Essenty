@@ -1,6 +1,7 @@
 package com.arkivanov.essenty.statekeeper
 
-import com.arkivanov.essenty.parcelable.Parcelable
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationStrategy
 import kotlin.reflect.KClass
 
 /**
@@ -15,7 +16,7 @@ interface StateKeeper {
      * @param clazz a [KClass] of the value, used for deserialization.
      * @return the value for the given [key] or `null` if no value is found.
      */
-    fun <T : Parcelable> consume(key: String, clazz: KClass<out T>): T?
+    fun <T : Any> consume(key: String, strategy: DeserializationStrategy<T>): T?
 
     /**
      * Registers the value [supplier] to be called when it's time to persist the data.
@@ -23,7 +24,7 @@ interface StateKeeper {
      * @param key a key to be associated with the value.
      * @param supplier a supplier of the value.
      */
-    fun <T : Parcelable> register(key: String, supplier: () -> T?)
+    fun <T : Any> register(key: String, strategy: SerializationStrategy<T>, supplier: () -> T?)
 
     /**
      * Unregisters a previously registered `supplier` for the given [key].
