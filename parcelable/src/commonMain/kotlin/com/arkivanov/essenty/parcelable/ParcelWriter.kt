@@ -34,6 +34,9 @@ expect fun ParcelWriter.writeStringOrNull(value: String?)
 expect fun ParcelWriter.writeParcelableOrNull(value: Parcelable?)
 
 @ExperimentalEssentyApi
+expect fun ParcelWriter.writeByteArray(value: ByteArray)
+
+@ExperimentalEssentyApi
 fun ParcelWriter.writeString(value: String) {
     writeStringOrNull(value = value)
 }

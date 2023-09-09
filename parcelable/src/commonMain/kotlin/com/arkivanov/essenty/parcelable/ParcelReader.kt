@@ -35,6 +35,9 @@ expect fun ParcelReader.readStringOrNull(): String?
 expect fun <T : Parcelable> ParcelReader.readParcelableOrNull(clazz: KClass<T>): T?
 
 @ExperimentalEssentyApi
+expect fun ParcelReader.readByteArray(): ByteArray
+
+@ExperimentalEssentyApi
 fun ParcelReader.readString(): String =
     requireNotNull(readStringOrNull())
 

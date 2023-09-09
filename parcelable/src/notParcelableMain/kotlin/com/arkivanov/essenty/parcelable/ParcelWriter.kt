@@ -38,3 +38,8 @@ actual fun ParcelWriter.writeStringOrNull(value: String?) {
 actual fun ParcelWriter.writeParcelableOrNull(value: Parcelable?) {
     error("Not yet supported")
 }
+
+@ExperimentalEssentyApi
+actual fun ParcelWriter.writeByteArray(value: ByteArray) {
+    error("Not yet supported")
+}

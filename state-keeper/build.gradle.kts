@@ -8,6 +8,7 @@ plugins {
     id("kotlin-multiplatform")
     id("com.android.library")
     id("kotlin-parcelize")
+    id("kotlinx-serialization")
     id("com.arkivanov.parcelize.darwin")
     id("com.arkivanov.gradle.setup")
 }
@@ -27,6 +28,8 @@ kotlin {
         common.main.dependencies {
             api(project(":parcelable"))
             implementation(project(":utils-internal"))
+            api(deps.jetbrains.kotlinx.kotlinxSerializationCore)
+            implementation(deps.jetbrains.kotlinx.kotlinxSerializationProtobuf)
         }
 
         android.main.dependencies {

@@ -46,3 +46,8 @@ actual fun ParcelWriter.writeStringOrNull(value: String?) {
 actual fun ParcelWriter.writeParcelableOrNull(value: Parcelable?) {
     parcel.writeParcelable(value, 0)
 }
+
+@ExperimentalEssentyApi
+actual fun ParcelWriter.writeByteArray(value: ByteArray) {
+    parcel.writeByteArray(value)
+}
