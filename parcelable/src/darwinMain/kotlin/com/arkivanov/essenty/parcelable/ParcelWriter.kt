@@ -5,6 +5,7 @@ import com.arkivanov.parcelize.darwin.encodeParcelableOrNull
 import com.arkivanov.parcelize.darwin.encodeStringOrNull
 import platform.Foundation.NSCoder
 import platform.Foundation.encodeBool
+import platform.Foundation.encodeBytes
 import platform.Foundation.encodeDouble
 import platform.Foundation.encodeFloat
 import platform.Foundation.encodeInt32
@@ -54,4 +55,12 @@ actual fun ParcelWriter.writeStringOrNull(value: String?) {
 @ExperimentalEssentyApi
 actual fun ParcelWriter.writeParcelableOrNull(value: Parcelable?) {
     coder.encodeParcelableOrNull(value = value, key = nextKey())
+}
+
+@ExperimentalEssentyApi
+actual fun ParcelWriter.writeByteArray(value: ByteArray) {
+    writeInt(value.size)
+    value.forEach {
+        writeInt(it.toInt())
+    }
 }

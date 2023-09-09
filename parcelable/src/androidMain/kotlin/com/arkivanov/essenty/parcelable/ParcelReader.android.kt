@@ -41,3 +41,7 @@ actual fun ParcelReader.readStringOrNull(): String? =
 @ExperimentalEssentyApi
 actual fun <T : Parcelable> ParcelReader.readParcelableOrNull(clazz: KClass<T>): T? =
     parcel.readParcelable(clazz.java.classLoader)
+
+@ExperimentalEssentyApi
+actual fun ParcelReader.readByteArray(): ByteArray =
+    requireNotNull(parcel.createByteArray())

@@ -36,3 +36,7 @@ actual fun ParcelReader.readStringOrNull(): String? =
 @ExperimentalEssentyApi
 actual fun <T : Parcelable> ParcelReader.readParcelableOrNull(clazz: KClass<T>): T? =
     error("Not yet supported")
+
+@ExperimentalEssentyApi
+actual fun ParcelReader.readByteArray(): ByteArray =
+    error("Not yet supported")

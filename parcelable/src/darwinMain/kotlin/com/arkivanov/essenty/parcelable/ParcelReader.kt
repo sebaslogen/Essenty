@@ -49,3 +49,7 @@ actual fun ParcelReader.readStringOrNull(): String? =
 @ExperimentalEssentyApi
 actual fun <T : Parcelable> ParcelReader.readParcelableOrNull(clazz: KClass<T>): T? =
     coder.decodeParcelableOrNull(key = nextKey())
+
+@ExperimentalEssentyApi
+actual fun ParcelReader.readByteArray(): ByteArray =
+    ByteArray(readInt()) { readInt().toByte() }
